@@ -16,6 +16,7 @@ export interface GetCommitsOptions {
 }
 
 export interface CommitInfo {
+  hash: string;
   message: string;
   date: string;
   author: {

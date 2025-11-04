@@ -45,7 +45,6 @@
    ```env
    GITHUB_TOKEN=ghp_your_actual_token_here
    GITHUB_AUTHOR=your_github_username
-   GITHUB_REPOS=owner/repo1,owner/repo2
    ```
 
 3. 确保 `.env` 文件不会被提交到 Git(已在 `.gitignore` 中配置)
@@ -151,47 +150,37 @@ DEEPSEEK_API_KEY=sk-your_actual_api_key_here
 - **原因**: 网络问题或 API 响应慢
 - **解决**: 检查网络连接,稍后重试
 
-## 仓库和分支配置
+## 仓库和分支配置（通过 config 文件）
 
-### 基本格式
+### 配置位置
 
-```env
-# 不指定分支(使用默认分支)
-GITHUB_REPOS=owner/repo1,owner/repo2
+在 `src/config/repos.json` 中配置需要统计的仓库与分支。
 
-# 指定分支
-GITHUB_REPOS=owner/repo1:main,owner/repo2:develop,owner/repo3:feature/new-ui
+### 配置示例
+
+```json
+[
+  {
+    "repo": "owner/repo1",
+    "branchs": ["main", "develop"]
+  },
+  {
+    "repo": "owner/repo2",
+    "branchs": ["release", "test"]
+  },
+  {
+    "repo": "owner/repo3",
+    "branchs": ["main"]
+  }
+]
 ```
 
-### 使用场景
+### 说明与注意事项
 
-**1. 不同仓库使用不同主分支**
-
-```env
-GITHUB_REPOS=company/backend:master,company/frontend:main
-```
-
-**2. 统计特定功能分支**
-
-```env
-GITHUB_REPOS=owner/repo:feature/payment-integration
-```
-
-**3. 多环境开发**
-
-```env
-# 开发环境
-GITHUB_REPOS=owner/repo:develop
-
-# 生产环境
-GITHUB_REPOS=owner/repo:main
-```
-
-### 注意事项
-
-- 如果不指定分支,将使用仓库的默认分支(通常是 `main` 或 `master`)
-- 分支名称区分大小写
-- 确保你有访问该分支的权限
+- `repo` 使用 `owner/repo` 格式。
+- `branchs` 为分支数组；同一提交若出现在多个分支，会按提交 `sha` 自动去重，不重复统计。
+- 分支名称区分大小写，确保有访问权限。
+- 未列入的分支不会统计（不再使用环境变量指定分支）。
 
 ## 时间范围配置
 
@@ -259,7 +248,7 @@ DEPARTMENT=DevOps - Platform
 | ------------------ | ------------ | ------------------------------- | ----------------------- |
 | `GITHUB_TOKEN`     | 私有仓库必需 | GitHub Personal Access Token    | `ghp_xxx...`            |
 | `GITHUB_AUTHOR`    | 是           | 提交作者的 GitHub 用户名        | `xxx`                   |
-| `GITHUB_REPOS`     | 是           | 仓库列表,支持指定分支           | `owner/repo:branch`     |
+| （仓库配置）        | -            | 通过 `src/config/repos.json` 配置 | 见上文 JSON 示例         |
 | `REPORT_TIME`      | 是           | 时间范围                        | `2025-09-01,2025-09-30` |
 | `DEEPSEEK_API_KEY` | 否           | DeepSeek API Key,用于生成月报   | `sk-xxx...`             |
 | `DEPARTMENT`       | 否           | 部门名称,默认 `Front-end - R&D` | `Backend - API`         |

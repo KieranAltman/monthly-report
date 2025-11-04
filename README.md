@@ -37,10 +37,6 @@ GITHUB_TOKEN=ghp_your_token_here
 # GitHub 作者名称
 GITHUB_AUTHOR=your_github_username
 
-# GitHub 仓库列表(逗号分隔)
-# 支持指定分支: owner/repo:branch
-GITHUB_REPOS=owner/repo1:main,owner/repo2:develop,owner/repo3
-
 # 报告时间范围
 REPORT_TIME=2025-01-01,2025-01-31
 
@@ -72,17 +68,30 @@ npm run dev
 
 获取 API Key: https://platform.deepseek.com/api_keys
 
-### 仓库和分支配置
+### 仓库和分支配置（通过 config 文件）
 
-支持为每个仓库指定不同的分支:
+现在通过 `src/config/repos.json` 进行配置，支持为每个仓库指定多个分支：
 
-```env
-# 格式: owner/repo:branch
-GITHUB_REPOS=owner/repo1:main,owner/repo2:develop,owner/repo3:feature/new-ui
-
-# 不指定分支则使用默认分支
-GITHUB_REPOS=owner/repo1,owner/repo2:develop
+```json
+[
+  {
+    "repo": "owner/repo1",
+    "branchs": ["main", "develop"]
+  },
+  {
+    "repo": "owner/repo2",
+    "branchs": ["release", "test"]
+  },
+  {
+    "repo": "owner/repo3",
+    "branchs": ["main"]
+  }
+]
 ```
+
+说明：
+- `repo` 为 `owner/repo` 格式。
+- `branchs` 为需要统计的分支数组；同一提交如果出现在多个分支，会按提交 `sha` 自动去重，不会重复统计。
 
 **使用场景**:
 - 不同仓库使用不同的主分支(main/master/develop)
@@ -181,6 +190,8 @@ Front-end - R&D
 
 ```
 src/
+├── config/
+│   └── repos.json     # 仓库与分支配置（JSON）
 ├── libs/
 │   ├── github.ts      # GitHub API 客户端
 │   └── deepseek.ts    # DeepSeek AI 客户端
@@ -190,6 +201,8 @@ src/
 │   └── index.ts       # 类型统一导出
 ├── template/
 │   └── report.md      # 月报模板
+├── utils/
+│   └── index.ts       # 通用工具（日志、报告生成）
 └── index.ts           # 主入口文件
 .output/               # 生成的月报输出目录
 └── YYYY-MM.md         # 按月份命名的月报文件

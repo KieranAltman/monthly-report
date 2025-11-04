@@ -69,6 +69,7 @@ export class GitHubClient {
 
         for (const commit of response.data) {
           commits.push({
+            hash: commit.sha,
             message: commit.commit.message,
             author: {
               name: commit.commit.author?.name || "",
